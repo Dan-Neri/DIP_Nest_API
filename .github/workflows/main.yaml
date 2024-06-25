@@ -62,19 +62,23 @@ jobs:
               --query "Command.CommandId" \
               --output text
             )
-              
-        - name: Wait for deploy step to finish on first EC2 instance
-          run: |
-            aws ssm wait command-executed \
-            --command-id $command_id \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
 
-        - name: Wait for deploy step to finish on second EC2 instance
+        - name: deploy output
           run: |
-            aws ssm wait command-executed \
-            --command-id $command_id \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
+            echo "$command_id"
+              
+        # - name: Wait for deploy step to finish on first EC2 instance
+        #   run: |
+        #     aws ssm wait command-executed \
+        #     --command-id $command_id \
+        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+
+        # - name: Wait for deploy step to finish on second EC2 instance
+        #   run: |
+        #     aws ssm wait command-executed \
+        #     --command-id $command_id \
+        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
-        - name: Deploy output
-          run: |
-            echo "$(aws ssm list-commands --command-id $command_id)"
+        # - name: Deploy output
+        #   run: |
+        #     echo "$(aws ssm list-commands --command-id $command_id)"
