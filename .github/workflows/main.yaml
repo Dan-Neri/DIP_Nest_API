@@ -61,17 +61,17 @@ jobs:
             )
             echo "command_id=$command_id" >> $GITHUB_OUTPUT
               
-        # - name: Wait for deploy step to finish on first EC2 instance
-        #   run: |
-        #     aws ssm wait command-executed \
-        #     --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+        - name: Wait for deploy step to finish on first EC2 instance
+          run: |
+            aws ssm wait command-executed \
+            --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
 
-        # - name: Wait for deploy step to finish on second EC2 instance
-        #   run: |
-        #     aws ssm wait command-executed \
-        #     --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
+        - name: Wait for deploy step to finish on second EC2 instance
+          run: |
+            aws ssm wait command-executed \
+            --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
         - name: Deploy output
           run: |
