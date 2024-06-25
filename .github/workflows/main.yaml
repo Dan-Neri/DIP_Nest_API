@@ -75,4 +75,5 @@ jobs:
           
         - name: Deploy output
           run: |
-            echo "${{ steps.aws-ec2-deploy.outputs.command_id }}"
+
+            echo "$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }})"
