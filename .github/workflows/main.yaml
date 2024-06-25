@@ -59,6 +59,8 @@ jobs:
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}"
               ]' --query "Command.CommandId" --output text
             )
+
+            echo "$command_id"
               
         # - name: Wait for deploy step to finish on first EC2 instance
         #   run: |
