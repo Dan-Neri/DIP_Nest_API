@@ -43,7 +43,7 @@ jobs:
           with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-            aws-region: ${{secrets.AWS_REGION}}
+            aws-region: ${{ secrets.AWS_REGION }}
 
         - name: Login to AWS ECR
           id: aws-ecr-login
@@ -52,13 +52,13 @@ jobs:
         - name: Deploy to AWS EC2 instance
           id: aws-ec2-deploy
           run: |
-            command_id = $(aws ssm send-command \
-              --instance-ids ${{vars.AWS_EC2_INSTANCE_ID_1}} ${{vars.AWS_EC2_INSTANCE_ID_2}} \
+            command_id=$(aws ssm send-command \
+              --instance-ids ${{ vars.AWS_EC2_INSTANCE_ID_1 }} ${{ vars.AWS_EC2_INSTANCE_ID_2 }} \
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
-                "aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}"
+                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}"
               ]' \
-              --region ${{secrets.AWS_REGION}} \
+              --region ${{ secrets.AWS_REGION }} \
               --query "Command.CommandId" \
               --output text
             )
@@ -67,13 +67,13 @@ jobs:
           run: |
             aws ssm wait command-executed \
             --command-id $command_id \
-            --instance-id ${{vars.AWS_EC2_INSTANCE_ID_1}}
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
 
         - name: Wait for deploy step to finish on second EC2 instance
           run: |
             aws ssm wait command-executed \
             --command-id $command_id \
-            --instance-id ${{vars.AWS_EC2_INSTANCE_ID_2}}
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
         - name: Deploy output
           run: |
