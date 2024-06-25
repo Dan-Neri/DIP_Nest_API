@@ -57,9 +57,8 @@ jobs:
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}"
-              ]' \
-              --region ${{ secrets.AWS_REGION }} \
-              --query "Command.CommandId" \
+              ]'
+              --query "Command.CommandId"
               --output text
             )
 
