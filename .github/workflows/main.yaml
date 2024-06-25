@@ -65,7 +65,7 @@ jobs:
 
         - name: deploy output
           run: |
-            echo "$command_id"
+            echo "${{ steps.aws-ec2-deploy.outputs.command_id }}"
               
         # - name: Wait for deploy step to finish on first EC2 instance
         #   run: |
