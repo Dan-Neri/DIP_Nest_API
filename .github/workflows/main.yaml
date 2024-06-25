@@ -59,23 +59,19 @@ jobs:
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}"
               ]'
             )
-
-        - name: deploy output
-          run: |
-            echo "${{ steps.aws-ec2-deploy.outputs.command_id }}"
               
-        # - name: Wait for deploy step to finish on first EC2 instance
-        #   run: |
-        #     aws ssm wait command-executed \
-        #     --command-id $command_id \
-        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+        - name: Wait for deploy step to finish on first EC2 instance
+          run: |
+            aws ssm wait command-executed \
+            --command-id $command_id \
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
 
-        # - name: Wait for deploy step to finish on second EC2 instance
-        #   run: |
-        #     aws ssm wait command-executed \
-        #     --command-id $command_id \
-        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
+        - name: Wait for deploy step to finish on second EC2 instance
+          run: |
+            aws ssm wait command-executed \
+            --command-id $command_id \
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
-        # - name: Deploy output
-        #   run: |
-        #     echo "$(aws ssm list-commands --command-id $command_id)"
+        - name: Deploy output
+          run: |
+            echo "$(aws ssm list-commands --command-id $command_id)"
