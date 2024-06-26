@@ -57,8 +57,8 @@ jobs:
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
-                "docker pull ${{ steps.aws-ecr-login.outputs.registry }}:latest",
-                "docker run --rm -d -p 3000:3000 --name dip_api ${{ steps.aws-ecr-login.outputs.registry }}:latest"
+                "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest",
+                "docker run --rm -d -p 3000:3000 --name dip_api ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest"
               ]' --query "Command.CommandId" --output text
             )
             echo "command_id=$command_id" >> $GITHUB_OUTPUT
