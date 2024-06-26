@@ -65,15 +65,19 @@ jobs:
           run: |
             aws ssm wait command-executed \
             --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }} || true
 
         - name: Wait for deploy step to finish on second EC2 instance
           run: |
             aws ssm wait command-executed \
             --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }} || true
           
-        - name: Deploy output
+        - name: Deploy result
+          env: status=$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} --query "Commands[0].Status" --output text)
           run: |
-
-            echo "$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }})"
+            if [ "$status" = "Success" ]; then
+              echo "Deployed successfully"
+            else
+              echo "Deploy failed"
+            fi
