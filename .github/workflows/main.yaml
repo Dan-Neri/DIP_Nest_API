@@ -56,7 +56,7 @@ jobs:
               --instance-ids ${{ vars.AWS_EC2_INSTANCE_ID_1 }} ${{ vars.AWS_EC2_INSTANCE_ID_2 }} \
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
-                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
+                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin potato",
                 "docker stop dip_api || true",
                 "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest",
                 "docker run --rm -d -p 3000:3000 --name dip_api ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest"
@@ -68,13 +68,13 @@ jobs:
           run: |
             aws ssm wait command-executed \
             --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }} || true
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
 
         - name: Wait for deploy step to finish on second EC2 instance
           run: |
             aws ssm wait command-executed \
             --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }} || true
+            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
         - name: Deploy result
           run: |
