@@ -74,8 +74,8 @@ jobs:
             --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }} || true
           
         - name: Deploy result
-          env: status=$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} --query "Commands[0].Status" --output text)
           run: |
+            status=$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} --query "Commands[0].Status" --output text)
             if [ "$status" = "Success" ]; then
               echo "Deployed successfully"
             else
