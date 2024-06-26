@@ -56,7 +56,9 @@ jobs:
               --instance-ids ${{ vars.AWS_EC2_INSTANCE_ID_1 }} ${{ vars.AWS_EC2_INSTANCE_ID_2 }} \
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
-                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin potato"
+                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
+                "docker pull ${{ steps.aws-ecr-login.outputs.registry }}:latest",
+                "docker run --rm -d -p 3000:3000 --name dip_api ${{ steps.aws-ecr-login.outputs.registry }}:latest"
               ]' --query "Command.CommandId" --output text
             )
             echo "command_id=$command_id" >> $GITHUB_OUTPUT
