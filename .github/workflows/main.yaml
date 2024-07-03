@@ -53,34 +53,54 @@ jobs:
           id: aws-ec2-deploy
           run: |
             command_id=$(aws ssm send-command \
-              --instance-ids ${{ vars.AWS_EC2_INSTANCE_ID_1 }} ${{ vars.AWS_EC2_INSTANCE_ID_2 }} \
               --document-name "AWS-RunShellScript" \
-              --parameters 'commands = [
-                "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
-                "docker stop ${{ vars.DOCKER_CONTAINER }}",
-                "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest",
-                "docker run --rm -d -p 3000:3000 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.DOCKER_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest"
-              ]' --query "Command.CommandId" --output text
-            )
-            echo "command_id=$command_id" >> $GITHUB_OUTPUT
-              
-        - name: Wait for deploy step to finish on first EC2 instance
-          run: |
-            aws ssm wait command-executed \
-            --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+              --targets "Key=instanceids,Values=${{ secrets.INSTANCE_ID_1 }},${{ secrets.INSTANCE_ID_2 }}" \
+              --comment "Pull docker image than run it" \
+              --parameters commands='[
+                "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ steps.login-aws-ecr.outputs.registry }}",
+                "docker stop qqqq || true",
+                "docker pull ${{ steps.login-aws-ecr.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest",
+                "docker run --rm -p 3000:3000 --name qqqq ${{ steps.login-aws-ecr.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest"
+              ]' --query "Command.CommandId" --output text) 
+            echo $command_id
 
-        - name: Wait for deploy step to finish on second EC2 instance
-          run: |
             aws ssm wait command-executed \
-            --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
-            --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
+              --command-id $command_id \
+              --instance-id ${{secrets.INSTANCE_ID_1}}
+
+            commandOutput=$(aws ssm list-commands --command-id $command_id)
+
+            echo $commandOutput
+
+        #     command_id=$(aws ssm send-command \
+        #       --instance-ids ${{ vars.AWS_EC2_INSTANCE_ID_1 }} ${{ vars.AWS_EC2_INSTANCE_ID_2 }} \
+        #       --document-name "AWS-RunShellScript" \
+        #       --parameters 'commands = [
+        #         "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
+        #         "docker stop ${{ vars.DOCKER_CONTAINER }}",
+        #         "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest",
+        #         "docker run --rm -d -p 3000:3000 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.DOCKER_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.AWS_ECR_REPO}}:latest"
+        #       ]' --query "Command.CommandId" --output text
+        #     )
+        #     echo "command_id=$command_id" >> $GITHUB_OUTPUT
+              
+        # - name: Wait for deploy step to finish on first EC2 instance
+        #   run: |
+        #     aws ssm wait command-executed \
+        #     --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
+        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_1 }}
+
+        # - name: Wait for deploy step to finish on second EC2 instance
+        #   run: |
+        #     aws ssm wait command-executed \
+        #     --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} \
+        #     --instance-id ${{ vars.AWS_EC2_INSTANCE_ID_2 }}
           
-        - name: Deploy result
-          run: |
-            status=$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} --query "Commands[0].Status" --output text)
-            if [ "$status" = "Success" ]; then
-              echo "Deployed successfully"
-            else
-              echo "Deploy failed"
-            fi
+        # - name: Deploy result
+        #   run: |
+        #     status=$(aws ssm list-commands --command-id ${{ steps.aws-ec2-deploy.outputs.command_id }} --query "Commands[0].Status" --output text)
+        #     if [ "$status" = "Success" ]; then
+        #       echo "Deployed successfully"
+        #     else
+        #       echo "Deploy failed"
+        #     fi
