@@ -10,7 +10,7 @@ export class TodoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column()
   title: string;
 
   @Column()
@@ -19,6 +19,6 @@ export class TodoEntity {
   @Column()
   done: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   createdAt: Date;
 }

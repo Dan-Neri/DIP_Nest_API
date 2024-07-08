@@ -2,13 +2,13 @@
 FROM --platform=linux/amd64 node:18
 
 # Create app directory
-WORKDIR /cwc/dip
+WORKDIR /cwc/dip/api
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
 # Install app dependencies
-RUN npm install
+RUN npm ci
 
 # Bundle app source
 COPY . .
