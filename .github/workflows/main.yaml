@@ -83,7 +83,7 @@ jobs:
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
-                "docker stop ${{ vars.FRONTEND_CONTAINER }},
+                "docker stop ${{ vars.FRONTEND_CONTAINER }}",
                 "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.FRONTEND_REPO}}:latest",
                 "docker run --rm -d -p 5173:5173 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.FRONTEND_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.FRONTEND_REPO}}:latest"
               ]' --query "Command.CommandId" --output text
@@ -110,7 +110,7 @@ jobs:
             else
               echo "Frontend deployment failed"
             fi
-  deploy_API:
+  deploy_api:
     name: Deploy API
     runs-on: ubuntu-latest
     needs: build_api
@@ -137,7 +137,7 @@ jobs:
               --document-name "AWS-RunShellScript" \
               --parameters 'commands = [
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
-                "docker stop ${{ vars.API_CONTAINER }},
+                "docker stop ${{ vars.API_CONTAINER }}",
                 "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.API_REPO}}:latest",
                 "docker run --rm -d -p 3000:3000 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.API_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.API_REPO}}:latest"
               ]' --query "Command.CommandId" --output text
