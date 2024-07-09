@@ -8,5 +8,5 @@ RUN npm run build
 FROM nginx:latest as prod
 COPY --from=build /cwc/dip/frontend/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
-EXPOSE 5173/tcp
+EXPOSE 80/tcp
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
