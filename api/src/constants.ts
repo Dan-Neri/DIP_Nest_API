@@ -1,4 +1,4 @@
-export const HOST = window.location.hostname;
+export let HOST = window.location.hostname;
 if (HOST === 'localhost') {
     HOST = 'localhost:3000';
 }
