@@ -29,12 +29,12 @@ export class TodosController {
   }
 
   @Put(':id')
-  async update(@Param('id') id, @Body('todo') todo: TodoDTO) {
+  async update(@Param('id') id: number, @Body('todo') todo: TodoDTO) {
     return await this.todoService.update(id, todo);
   }
 
-  @Delete()
-  async delete(@Body() id: number) {
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
     return await this.todoService.delete(id);
   }
 }
