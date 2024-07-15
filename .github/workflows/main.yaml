@@ -139,7 +139,7 @@ jobs:
                 "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.aws-ecr-login.outputs.registry }}",
                 "docker stop ${{ vars.API_CONTAINER }}",
                 "docker pull ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.API_REPO}}:latest",
-                "docker run --rm -d -p 3000:3000 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.API_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.API_REPO}}:latest"
+                "docker run -d -p 3000:3000 -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME=${{ secrets.DB_NAME }} -e ENVIRONMENT=production --name ${{ vars.API_CONTAINER }} ${{ steps.aws-ecr-login.outputs.registry }}/${{secrets.API_REPO}}:latest"
               ]' --query "Command.CommandId" --output text
             )
             echo "command_id=$command_id" >> $GITHUB_OUTPUT
