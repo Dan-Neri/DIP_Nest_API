@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migration-job-{{ .values.api.tag }}
+spec:
+  template:
+    tttlSecondsAfterFinished: 10
+    spec:
+      containers:
+      - name: database-migration
+        image: {{ .values.api.image.repository }}:{{ .values.api.image.tag }}
+        command: ["npm", "run", "migration:run"]
+        env:
+          - name: DB_HOST
+            value: {{ .values.database.host }}
+          - name: DB_PORT
+            value: {{ .values.database.port }}
+          - name: DB_NAME
+            value: {{ .values.database.name }}
+          - name: DB_USERNAME
+            value: {{ .values.database.username }}
+          - name: DB_PASSWORD
+            value: {{ .values.database.password }}
+          - name: ENVIRONMENT
+            value: {{ .values.environment }}
+      restartPolicy: Never
+  backoffLimit: 1
