@@ -33,3 +33,9 @@ spec:
           value: {{ .Values.environment }}
         ports:
         - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /api
+            port: 3000
+          initialDelaySeconds: 2
+          periodSeconds: 2
