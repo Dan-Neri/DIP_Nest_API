@@ -26,7 +26,7 @@ jobs:
           env:
             ECR_REGISTRY: ${{ steps.aws-ecr-login.outputs.registry }}
             ECR_REPOSITORY: ${{secrets.FRONTEND_REPO}}
-            IMAGE_TAG: v2
+            IMAGE_TAG: ${{ github.sha }}
           run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./frontend
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -52,12 +52,13 @@ jobs:
           env:
             ECR_REGISTRY: ${{ steps.aws-ecr-login.outputs.registry }}
             ECR_REPOSITORY: ${{secrets.API_REPO}}
-            IMAGE_TAG: v2
+            IMAGE_TAG: ${{ github.sha }}
           run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./api
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   deploy:
     name: Deploy to EKS
+    needs: [build_frontend, build_api]
     runs-on: arc-runner-set
     steps:
     - name: Checkout
@@ -72,30 +73,25 @@ jobs:
 
     - name: Install curl and unzip
       run: |
-        echo "Installing curl..."
         sudo apt-get update -y
         sudo apt-get install -y curl unzip
 
     - name: Install aws cli
       run: |
-        echo "Installing aws cli..."
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         sudo ./aws/install
 
     - name: Install helm
       run: |
-        echo "Installing Helm..."
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
 
     - name: Configure kubectl
       run: |
-        echo "Configuring kubectl..."
         aws eks update-kubeconfig --region ${{secrets.AWS_REGION}} --name ${{secrets.K8S_CLUSTER_NAME}}
 
     - name: Update Helm Chart
       run: |
-        echo "Updating helm chart..."
-        helm upgrade --install todo-app ./todo --set database.host=${{secrets.DB_HOST}} --set database.username=${{secrets.DB_USERNAME}} --set database.password=${{secrets.DB_PASSWORD}} --set database.name=${{secrets.DB_NAME}} --set api.image.repository=${{secrets.API_IMAGE_URI}} --set frontend.image.repository=${{secrets.FRONTEND_IMAGE_URI}} --set frontend.image.tag=v2 --set api.image.tag=v2
+        helm upgrade --install todo-app ./todo --set database.host=${{secrets.DB_HOST}} --set database.username=${{secrets.DB_USERNAME}} --set database.password=${{secrets.DB_PASSWORD}} --set database.name=${{secrets.DB_NAME}} --set api.image.repository=${{secrets.API_IMAGE_URI}} --set frontend.image.repository=${{secrets.FRONTEND_IMAGE_URI}} --set frontend.image.tag=${{github.sha}} --set api.image.tag=${{github.sha}}
