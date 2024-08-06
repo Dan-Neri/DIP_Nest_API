@@ -19,17 +19,17 @@ spec:
     spec:
       containers:
       - name: todo-api
-        image: {{ .values.api.image.repository }}:{{ .values.api.image.tag }}
+        image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
         env:
         - name: DB_HOST
-          value: {{ .values.database.host }}
+          value: {{ .Values.database.host }}
         - name: DB_NAME
-          value: {{ .values.database.name }}
+          value: {{ .Values.database.name }}
         - name: DB_USERNAME
-          value: {{ .values.database.username }}
+          value: {{ .Values.database.username }}
         - name: DB_PASSWORD
-          value: {{ .values.database.password }}
+          value: {{ .Values.database.password }}
         - name: ENVIRONMENT
-          value: {{ .values.environment }}
+          value: {{ .Values.environment }}
         ports:
         - containerPort: 3000
