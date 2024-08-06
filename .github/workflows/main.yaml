@@ -98,4 +98,4 @@ jobs:
     - name: Update Helm Chart
       run: |
         echo "Updating helm chart..."
-        helm upgrade --install todo-app ./todo --set database.host=${{secrets.DB_HOST}} --set database.username=${{secrets.DB_USERNAME}} --set database.password=${{secrets.DB_PASSWORD}} --set database.name=${{secrets.DB_NAME}} --set api.image.repository=${{secrets.API_IMAGE_URI}} --set frontend.image.repository=${{secrets.FRONTEND_IMAGE_URI}} 
+        helm upgrade --install todo-app ./todo --set database.host=${{secrets.DB_HOST}} --set database.username=${{secrets.DB_USERNAME}} --set database.password=${{secrets.DB_PASSWORD}} --set database.name=${{secrets.DB_NAME}} --set api.image.repository=${{secrets.API_IMAGE_URI}} --set frontend.image.repository=${{secrets.FRONTEND_IMAGE_URI}} --set frontend.image.tag=v2 --set api.image.tag=v2
