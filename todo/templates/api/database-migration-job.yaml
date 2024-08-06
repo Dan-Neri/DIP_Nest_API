@@ -16,7 +16,7 @@ spec:
           - name: DB_PORT
             value: "5432"
           - name: DB_NAME
-            value: int({{ .Values.database.name }})
+            value: {{ .Values.database.name }}
           - name: DB_USERNAME
             value: {{ .Values.database.username }}
           - name: DB_PASSWORD
